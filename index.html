@@ -15,6 +15,13 @@
         <a-entity oculus-touch-controls="hand: left" thumbstick-logging></a-entity>
         <a-entity oculus-touch-controls="hand: right" thumbstick-logging button-listener></a-entity>
 
+        <a-entity vive-controls="hand: left" thumbstick-logging></a-entity>
+        <a-entity vive-controls="hand: right" thumbstick-logging button-listener></a-entity>
+
+        <a-entity daydream-controls="hand: right" thumbstick-logging button-listener></a-entity>
+        <a-entity gearvr-controls="hand: right" thumbstick-logging button-listener></a-entity>
+        <a-entity oculus-go-controls="hand: right" thumbstick-logging button-listener></a-entity>
+
         <a-entity camera rotation-reader look-controls="hmdEnabled: false" id="camera">
             <a-entity id="white-balance" geometry="primitive: plane; height: 10; width: 10" position="0 0 -1"
                 material="color: white; opacity: 1; repeat: 50 50" visible="false"></a-entity>

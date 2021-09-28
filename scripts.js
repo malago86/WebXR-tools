@@ -95,6 +95,17 @@ AFRAME.registerComponent('button-listener', {
             running = !running;
         });
 
+        el.addEventListener('trackpadchanged', function (evt) {
+            $(".flying").each(function (fs) {
+                // this.object3D.position.x = 0;
+                if (running)
+                    this.pause();
+                else
+                    this.play()
+            });
+            running = !running;
+        });
+
         el.addEventListener('triggerdown', function (evt) {
             $(".flying").each(function (fs) {
                 this.object3D.position.x = 0;

@@ -43,7 +43,9 @@
             controls,
             material,
             volconfig,
-            cmtextures;
+            cmtextures,
+            floor,
+            volume3D;
         let group;
         let controller, session;
 
@@ -79,7 +81,7 @@
             controls.update();
 
             controller = renderer.xr.getController(0);
-            controller.addEventListener('select', onSelect);
+            controller.addEventListener('inputsourceschange', onSelect);
             scene.add(controller);
 
             const geometry = new THREE.IcosahedronGeometry(10, 3);
@@ -91,7 +93,7 @@
                 roughness: 1.0,
                 metalness: 0.0
             });
-            const floor = new THREE.Mesh(floorGeometry, floorMaterial);
+            floor = new THREE.Mesh(floorGeometry, floorMaterial);
             floor.rotation.x = - Math.PI / 2;
             floor.receiveShadow = true;
             scene.add(floor);
@@ -203,11 +205,9 @@
                 const geometry = new THREE.BoxGeometry(volume.xLength, volume.yLength, volume.zLength);
                 geometry.translate(volume.xLength / 2 - 0.5, volume.yLength / 2 - 0.5, volume.zLength / 2 - 0.5);
 
-
-
-                const mesh = new THREE.Mesh(geometry, material);
-                scene.add(mesh);
-                mesh.position.set(-volume.xLength / 2 - 0.5, -volume.yLength / 2 - 0.5, -100);
+                volume3D = new THREE.Mesh(geometry, material);
+                scene.add(volume3D);
+                volume3D.position.set(-volume.xLength / 2 - 0.5, -volume.yLength / 2 - 0.5, -100);
 
                 render();
 
@@ -252,7 +252,20 @@
         }
 
         renderer.setAnimationLoop(function () {
-
+            const session = renderer.xr.getSession();
+            if (session && session.inputSources[0] && "buttons" in session.inputSources[0].gamepad) {
+                const buttons = session.inputSources[0].gamepad.buttons.map((b) => b.value);
+                const a = buttons[4];
+                const b = buttons[5];
+                if (a) {
+                    // console.log("A")
+                    volume3D.position.x += -0.05;
+                }
+                if (b) {
+                    // console.log("B")
+                    volume3D.position.x -= -0.05;
+                }
+            }
             renderer.render(scene, camera);
 
         });
@@ -265,6 +278,7 @@
 
         function onSelect() {
             console.log("SELECT");
+            console.log(controller);
             // const material = new THREE.MeshPhongMaterial({ color: 0xffffff * Math.random() });
             // const mesh = new THREE.Mesh(geometry, material);
             // mesh.position.set(0, 0, - 0.3).applyMatrix4(controller.matrixWorld);

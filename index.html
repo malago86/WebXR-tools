@@ -3,84 +3,15 @@
 <head>
     <meta charset="utf-8">
     <link href="style.css" rel="stylesheet">
-    <script src="lib/jquery-3.6.0.min.js" type="text/javascript"> </script>
-    <script src="lib/aframe.min.js" type="text/javascript"> </script>
-    <script src="scripts.js" type="text/javascript"> </script>
+    <title>WebXR Tools | DIDSR</title>
 </head>
 
 <body>
-    <a-scene renderer="foveationLevel: 3; antialias: false" vr-mode-ui="enterVRButton: #myEnterVRButton;">
-        <a-sky color="#000000"></a-sky>
-        <a-entity light="type: ambient; color: #FFF"></a-entity>
-        <a-entity oculus-touch-controls="hand: left" thumbstick-logging></a-entity>
-        <a-entity oculus-touch-controls="hand: right" thumbstick-logging button-listener></a-entity>
-
-        <a-entity vive-controls="hand: left" thumbstick-logging></a-entity>
-        <a-entity vive-controls="hand: right" thumbstick-logging button-listener></a-entity>
-
-        <a-entity daydream-controls="hand: right" thumbstick-logging button-listener></a-entity>
-        <a-entity gearvr-controls="hand: right" thumbstick-logging button-listener></a-entity>
-        <a-entity oculus-go-controls="hand: right" thumbstick-logging button-listener></a-entity>
-
-        <a-entity camera rotation-reader look-controls="hmdEnabled: false" id="camera">
-            <a-entity id="white-balance" geometry="primitive: plane; height: 10; width: 10" position="0 0 -1"
-                material="color: white; opacity: 1; repeat: 50 50" visible="false"></a-entity>
-            <a-entity id="alignment" visible="false"></a-entity>
-            <a-entity id="main">
-                <a-entity id="plane" geometry="primitive: plane; height: 10; width: 10" position="0 0 -1.5"
-                    material="color: white; opacity: 1; repeat: 50 50" visible="false"></a-entity>
-
-                <!-- <a-cursor></a-cursor> -->
-
-                <a-entity geometry="primitive: plane; height: 10; width: 10" position="0 0 -1"
-                    material="color: white; opacity: 1; src: img/square.png; repeat: 50 50"></a-entity>
-                <a-text id="time" value="..." color="red" position="-0.2 -0.2 -1" width="0.5" align="left">
-                </a-text>
-
-
-                <a-circle color="red" radius="0.02" position="0.0 -0.0 -1" id="static">
-                </a-circle>
-
-                <!-- <a-circle color="#000" radius="0.001" position="0 0 -0.1" id="flyingspot" flyaway="speed: 0.00001">
-            </a-circle> -->
-                <!-- <a-entity text="value: Hello World; color: red" position="0 0 -1"></a-entity> -->
-                <a-circle color="#000" radius="0.01" position="0 .05 -1" id="flyingspot1" flyaway="speed: 0.0001"
-                    class="flying">
-                </a-circle>
-                <a-circle color="#000" radius="0.01" position="0 .1 -1" id="flyingspot2" flyaway="speed: 0.0002"
-                    class="flying">
-                </a-circle>
-                <a-circle color="#000" radius="0.01" position="0 .15 -1" id="flyingspot3" flyaway="speed: 0.0003"
-                    class="flying">
-                </a-circle>
-                <a-circle color="#000" radius="0.01" position="0 .2 -1" id="flyingspot4" flyaway="speed: 0.0004"
-                    class="flying">
-                </a-circle>
-                <!-- <a-circle color="#000" radius="0.001" position="0 .05 -0.1" id="flyingspot5" flyaway="speed: 0.00005"
-                class="flying">
-            </a-circle> -->
-
-                <a-entity material="color: black;" geometry="primitive: plane; width: .02; height: .02; "
-                    position="0 -.05 -1" id="flyingbox1" flyaway="speed: 0.0001" class="flying"></a-entity>
-                <a-entity material="color: black;" geometry="primitive: plane; width: .02; height: .02;"
-                    position="0 -.1 -1" id="flyingbox2" flyaway="speed: 0.0002" class="flying"></a-entity>
-                <a-entity material="color: black;" geometry="primitive: plane; width: .02; height: .02; "
-                    position="0 -.15 -1" id="flyingbox3" flyaway="speed: 0.0003" class="flying"></a-entity>
-                <a-entity material="color: black;" geometry="primitive: plane; width: .02; height: 0.02;"
-                    position="0 -.2 -1" id="flyingbox4" flyaway="speed: 0.0004" class="flying"></a-entity>
-                <!-- <a-entity material="color: black;" geometry="primitive: plane; width: .002; height: .002;"
-                position="0 -.05 -0.1" id="flyingbox5" flyaway="speed: 0.00005" class="flying"></a-entity> -->
-            </a-entity>
-        </a-entity>
-        <a id="myEnterVRButton" href="#">START!</a>
-    </a-scene>
-    <div id="info">
-        <p id="timeOverlay"></p>
-        <div id="fullscreen" class="button">Toggle fullscreen!</div>
-        <div id="play" class="button">Play/Pause</div>
-        <div id="reset" class="button">Reset</div>
-        <span id="faster" class="button">Faster</span>
-        <span id="slower" class="button">Slower</span>
+    <h1>WebXR Tools by DIDSR</h1>
+    <div style="margin:auto;width: fit-content;">
+        <a class="experimentList" href="./flying/index.html">Flying Spot #1</a>
+        <a class="experimentList" href="./flying2/index.html">Flying Spot #2</a>
+        <a class="experimentList" href="./volume3d/index.html">Volume 3D</a>
     </div>
 </body>
 

@@ -1,5 +1,7 @@
 body {
   margin:0;
+  background-color: rgb(26, 26, 26);
+  font-family: 'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif;
 }
 
 #canvas {
@@ -78,6 +80,28 @@ body {
   font-family: 'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif;
 }
 
-#myEnterVRButton:hover{
+.experimentList{
+  background: rgb(32, 54, 58);
+  display: table-cell;
+  
+  text-align: center;
+  vertical-align: middle;
+  font-size: 300%;
+  color: white;
+  text-decoration: none;
+  border-radius: 10px;
+  border: lime 3px solid;
+  float:left;
+  margin:10px;
+  padding:10px;
+}
+
+#myEnterVRButton:hover, .experimentList:hover{
   background:darkgreen;
+}
+
+h1{
+  margin-top: 30px;
+  text-align: center;
+  color:white;
 }

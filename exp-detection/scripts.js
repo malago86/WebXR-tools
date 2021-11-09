@@ -11,38 +11,29 @@ var thumbstickMoving = false;
 var sceneNumber = 0;
 var prev_time = 0;
 
+var responses = [];
+var present = true;
+
+var positionVariation = 70;
 
 AFRAME.registerComponent('button-listener', {
     init: function () {
         var el = this.el;
 
         el.addEventListener('abuttondown', function (evt) {
-            $(".flying").each(function (fs) {
-                // this.object3D.position.x = 0;
-                if (running)
-                    this.pause();
-                else
-                    this.play()
-            });
-            running = !running;
+            newTrial(true);
+        });
+
+        el.addEventListener('bbuttondown', function (evt) {
+            newTrial(false);
         });
 
         el.addEventListener('trackpadchanged', function (evt) {
-            $(".flying").each(function (fs) {
-                // this.object3D.position.x = 0;
-                if (running)
-                    this.pause();
-                else
-                    this.play()
-            });
-            running = !running;
+
         });
 
         el.addEventListener('triggerdown', function (evt) {
-            $(".flying").each(function (fs) {
-                this.object3D.position.x = 0;
-            });
-            running = false;
+
         });
 
         el.addEventListener('gripdown', function (evt) {
@@ -116,40 +107,50 @@ function toggleFullScreen() {
 
 $(document).ready(function () {
     addAlignmentSquares();
-    function addAlignmentSquares(n = 10) {
-        for (row = 0; row < n / 2; row++) {
-            for (col = 0; col < n / 2; col++) {
-                x = col * 0.05;
-                y = row * 0.05;
-                $("#alignment").append('<a-entity class="alignment-square" material="color: white; " geometry="primitive: plane; width: .02; height: .02; "\
-            position = "'+ x + ' ' + y + ' -1" ></a-entity>');
-                $("#alignment").append('<a-entity class="alignment-square" material="color: white; " geometry="primitive: plane; width: .02; height: .02; "\
-            position = "'+ -x + ' ' + y + ' -1" ></a-entity>');
-                $("#alignment").append('<a-entity class="alignment-square" material="color: white; " geometry="primitive: plane; width: .02; height: .02; "\
-            position = "'+ x + ' ' + -y + ' -1" ></a-entity>');
-                $("#alignment").append('<a-entity class="alignment-square" material="color: white; " geometry="primitive: plane; width: .02; height: .02; "\
-            position = "'+ -x + ' ' + -y + ' -1" ></a-entity>');
-            }
-        }
-    }
+
 
     $("#fullscreen").click(function (event) {
         toggleFullScreen();
     });
 
-    $('html').keypress(function (e) {
-        console.log(e.key);
-        document.getElementById("keypressed").setAttribute("text", "value", e.key);
-        $("#keypressed").attr("text", "value", e.key);
-    });
-    var gabor = createGabor(100, 0.1, 45, 10, 0.5);
+    // $('html').keypress(function (e) {
+    //     document.getElementById("keypressed").setAttribute("text", "value", e.key);
+    //     $("#keypressed").attr("text", "value", e.key);
+    // });
+    var gabor = createGabor(100, 0.1, 45, 10, 0.5, 1);
     $("#gabor").append(gabor);
     rr = gabor.toDataURL("image/png").split(';base64,')[1];
-    $("#main").append('<a-plane material="src:url(data:image/png;base64,' + rr + ');transparent:true" width="10" height="10" position="0 0 -50"></a-plane>');
+    $("#main").append('<a-plane id="gabor-vr" material="src:url(data:image/png;base64,' + rr + ');transparent:true" width="10" height="10" position="0 0 -50"></a-plane>');
 
+    $(document).on('keypress', function (event) {
+        let keycode = (event.keyCode ? event.keyCode : event.which);
+        console.log(keycode);
+        if (keycode == '97') {
+            newTrial(true);
+        } else if (keycode == "98") {
+            newTrial(false);
+        }
+    });
 });
 
-function createGabor(side, frequency, orientation, std, phase) {
+function addAlignmentSquares(n = 10) {
+    for (row = 0; row < n / 2; row++) {
+        for (col = 0; col < n / 2; col++) {
+            x = col * 0.05;
+            y = row * 0.05;
+            $("#alignment").append('<a-entity class="alignment-square" material="color: white; " geometry="primitive: plane; width: .02; height: .02; "\
+            position = "'+ x + ' ' + y + ' -1" ></a-entity>');
+            $("#alignment").append('<a-entity class="alignment-square" material="color: white; " geometry="primitive: plane; width: .02; height: .02; "\
+            position = "'+ -x + ' ' + y + ' -1" ></a-entity>');
+            $("#alignment").append('<a-entity class="alignment-square" material="color: white; " geometry="primitive: plane; width: .02; height: .02; "\
+            position = "'+ x + ' ' + -y + ' -1" ></a-entity>');
+            $("#alignment").append('<a-entity class="alignment-square" material="color: white; " geometry="primitive: plane; width: .02; height: .02; "\
+            position = "'+ -x + ' ' + -y + ' -1" ></a-entity>');
+        }
+    }
+}
+
+function createGabor(side, frequency, orientation, std, phase, contrast) {
     /*
         Generates and returns a Gabor patch canvas.
         Arguments:
@@ -187,9 +188,57 @@ function createGabor(side, frequency, orientation, std, phase) {
             idata.data[(y * side + x) * 4] = 255 * (amp);     // red
             idata.data[(y * side + x) * 4 + 1] = 255 * (amp); // green
             idata.data[(y * side + x) * 4 + 2] = 255 * (amp); // blue
-            idata.data[(y * side + x) * 4 + 3] = 255 * f;
+            idata.data[(y * side + x) * 4 + 3] = 255 * f * contrast;
         }
     }
     ctx.putImageData(idata, 0, 0);
     return gabor;
+}
+
+function contrastImage(imageData, contrast) {
+
+    var data = imageData.data;
+    var factor = (259 * (contrast + 255)) / (255 * (259 - contrast));
+
+    for (var i = 0; i < data.length; i += 4) {
+        data[i] = factor * (data[i] - 128) + 128;
+        data[i + 1] = factor * (data[i + 1] - 128) + 128;
+        data[i + 2] = factor * (data[i + 2] - 128) + 128;
+    }
+    return imageData;
+}
+
+function newTrial(response) {
+
+    str = present == response ? "Correct!" : "Incorrect!";
+    document.getElementById("bottom-text").setAttribute("text", "value", str);
+    document.getElementById("bottom-text").setAttribute("position", "0 0 -1");
+    document.getElementById("gabor-vr").setAttribute("visible", "false");
+    responses.push({ present: present, response: response });
+
+    present = Math.random() < 0.5;
+
+    if (!present) {
+        contrast = 0;
+    } else {
+        contrast = Math.random() / 10; // between 0 and 0.1
+    }
+
+    // contrast = 0.2;
+    angle = Math.random() * 360;
+
+    gabor = createGabor(100, 0.1, angle, 10, 0.5, contrast);
+
+    setTimeout(function () {
+        rr = gabor.toDataURL("image/png").split(';base64,')[1];
+        document.getElementById("gabor-vr").setAttribute("material", "src", "url(data:image/png;base64," + rr + ")");
+
+        document.getElementById("bottom-text").setAttribute("text", "value", "Press A for present, B for absent");
+        document.getElementById("bottom-text").setAttribute("position", "0 -.5 -1");
+        document.getElementById("gabor-vr").setAttribute("visible", "true");
+
+        // position = [Math.random() * positionVariation - positionVariation / 2, Math.random() * positionVariation - positionVariation / 2, -50];
+        // document.getElementById("gabor-vr").setAttribute("position", position.join(" "));
+    }, 1000);
+
 }

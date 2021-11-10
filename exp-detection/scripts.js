@@ -12,9 +12,14 @@ var sceneNumber = 0;
 var prev_time = 0;
 
 var responses = [];
-var present = true;
+var present = true, contrast = 1, position = [0, 0, -50];
+var stimulusOn = -1, stimulusOff = -1;
+
+var maxTrials = 0;
 
 var positionVariation = 70;
+
+var acceptingResponses = false;
 
 AFRAME.registerComponent('button-listener', {
     init: function () {
@@ -121,15 +126,26 @@ $(document).ready(function () {
     $("#gabor").append(gabor);
     rr = gabor.toDataURL("image/png").split(';base64,')[1];
     $("#main").append('<a-plane id="gabor-vr" material="src:url(data:image/png;base64,' + rr + ');transparent:true" width="10" height="10" position="0 0 -50"></a-plane>');
-
+    stimulusOn = Date.now();
+    acceptingResponses = true;
+    maxTrials = parseInt($("#num-trials").val());
+    $("#info").on("keypress", function (e) {
+        e.stopPropagation();
+    });
     $(document).on('keypress', function (event) {
         let keycode = (event.keyCode ? event.keyCode : event.which);
-        console.log(keycode);
-        if (keycode == '97') {
-            newTrial(true);
-        } else if (keycode == "98") {
-            newTrial(false);
+        if (acceptingResponses) {
+            if (keycode == '97') {
+                newTrial(true);
+            } else if (keycode == "98") {
+                newTrial(false);
+            }
         }
+    });
+
+    $("#myEnterVRButton").click(function () {
+        maxTrials = parseInt($("#num-trials").val());
+        stimulusOn = Date.now();
     });
 });
 
@@ -209,19 +225,29 @@ function contrastImage(imageData, contrast) {
 }
 
 function newTrial(response) {
+    stimulusOff = Date.now();
+    acceptingResponses = false;
 
     str = present == response ? "Correct!" : "Incorrect!";
-    document.getElementById("bottom-text").setAttribute("text", "value", str);
+    document.getElementById("bottom-text").setAttribute("text", "value", str + "\n\n" + (responses.length + 1) + "/" + maxTrials);
     document.getElementById("bottom-text").setAttribute("position", "0 0 -1");
     document.getElementById("gabor-vr").setAttribute("visible", "false");
-    responses.push({ present: present, response: response });
+    responses.push({
+        present: present,
+        contrast: contrast,
+        position: position,
+        trialTime: stimulusOff - stimulusOn,
+        response: response
+    });
+
+    // NEW TRIAL INFO
 
     present = Math.random() < 0.5;
 
     if (!present) {
         contrast = 0;
     } else {
-        contrast = Math.random() / 10; // between 0 and 0.1
+        contrast = Math.random() * parseFloat($("#max-contrast").val()); // between 0 and 0.1
     }
 
     // contrast = 0.2;
@@ -230,15 +256,34 @@ function newTrial(response) {
     gabor = createGabor(100, 0.1, angle, 10, 0.5, contrast);
 
     setTimeout(function () {
-        rr = gabor.toDataURL("image/png").split(';base64,')[1];
-        document.getElementById("gabor-vr").setAttribute("material", "src", "url(data:image/png;base64," + rr + ")");
+        if (responses.length == maxTrials) {
+            // END EXPERIMENT!
+            document.getElementById("bottom-text").setAttribute("text", "value", "EXPERIMENT FINISHED!\n\nThanks for playing :)");
+            downloadObjectAsJson(responses, $("#participant-name").val() + "-" + Date.now());
+        } else {
+            rr = gabor.toDataURL("image/png").split(';base64,')[1];
+            document.getElementById("gabor-vr").setAttribute("material", "src", "url(data:image/png;base64," + rr + ")");
 
-        document.getElementById("bottom-text").setAttribute("text", "value", "Press A for present, B for absent");
-        document.getElementById("bottom-text").setAttribute("position", "0 -.5 -1");
-        document.getElementById("gabor-vr").setAttribute("visible", "true");
-
-        // position = [Math.random() * positionVariation - positionVariation / 2, Math.random() * positionVariation - positionVariation / 2, -50];
-        // document.getElementById("gabor-vr").setAttribute("position", position.join(" "));
+            document.getElementById("bottom-text").setAttribute("text", "value", "Press A for present, B for absent");
+            document.getElementById("bottom-text").setAttribute("position", "0 -.5 -1");
+            document.getElementById("gabor-vr").setAttribute("visible", "true");
+            acceptingResponses = true;
+            stimulusOn = Date.now();
+            if ($("#random-location").prop("checked")) {
+                position = [Math.random() * positionVariation - positionVariation / 2, Math.random() * positionVariation - positionVariation / 2, -50];
+                document.getElementById("gabor-vr").setAttribute("position", position.join(" "));
+            }
+        }
     }, 1000);
 
+}
+
+function downloadObjectAsJson(exportObj, exportName) {
+    var dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(exportObj, null, 2));
+    var downloadAnchorNode = document.createElement('a');
+    downloadAnchorNode.setAttribute("href", dataStr);
+    downloadAnchorNode.setAttribute("download", exportName + ".json");
+    document.body.appendChild(downloadAnchorNode); // required for firefox
+    downloadAnchorNode.click();
+    downloadAnchorNode.remove();
 }

@@ -21,7 +21,6 @@ body {
   top: 10px;
   background-color: rgba(0, 0, 0, 1);
   color: white;
-  font-family: monospace;
   padding: 1em;
 }
 
@@ -58,6 +57,21 @@ body {
 }
 #play:hover{
   background:rgb(105, 105, 0)
+}
+
+input[type=text]{
+  width:55px;
+  text-align: center;
+  background:rgb(34, 34, 34);
+  border: 1px solid rgb(138, 138, 138);
+  color:white;
+  float:right;
+}
+
+input[type=checkbox]{
+  float:right;
+  width:55px;
+  height: 15px;
 }
 
 #myEnterVRButton{

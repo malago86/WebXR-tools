@@ -10,7 +10,7 @@
 
 <body>
     <a-scene renderer="foveationLevel: 3; antialias: false" vr-mode-ui="enterVRButton: #myEnterVRButton;">
-        <a-sky color="rgb(128,128,128)"></a-sky>
+        <a-sky id="sky" color="rgb(128,128,128)"></a-sky>
         <a-entity light="type: ambient; color: #FFF"></a-entity>
         <a-entity oculus-touch-controls="hand: left" thumbstick-logging></a-entity>
         <a-entity oculus-touch-controls="hand: right" thumbstick-logging button-listener></a-entity>
@@ -22,7 +22,7 @@
         <a-entity gearvr-controls="hand: right" thumbstick-logging button-listener></a-entity>
         <a-entity oculus-go-controls="hand: right" thumbstick-logging button-listener></a-entity>
 
-        <a-entity camera rotation-reader look-controls="hmdEnabled: false" id="camera">
+        <a-entity camera rotation-reader id="camera">
             <a-entity id="white-balance" geometry="primitive: plane; height: 10; width: 10" position="0 0 -1"
                 material="color: white; opacity: 1;" visible="false"></a-entity>
             <a-entity id="alignment" visible="false"></a-entity>
@@ -34,8 +34,8 @@
 
                 <!-- <a-entity material="color: #FFF;" geometry="primitive: plane; width: 2; height: 2; " position="0 0 -100"
                     id="flyingbox1" flyaway="speed: 0.0001" class="flying"></a-entity> -->
-                <a-entity id="bottom-text" text="value: Press A for present, B for absent; align: center"
-                    position="0 -.5 -1"></a-entity>
+                <a-entity id="bottom-text" text="value: Press A for present, B for absent; align: center; width: 50"
+                    position="0 -25 -50"></a-entity>
             </a-entity>
         </a-entity>
         <a id="myEnterVRButton" href="#">START!</a>
@@ -46,11 +46,19 @@
         </p>
         <p>Number of trials: <input type="text" id="num-trials" value="100">
         </p>
-        <p>Maximum contrast: <input type="text" id="max-contrast" value="0.1">
+        <p>Size (std): <input type="text" id="size-std" value="10">
+        </p>
+        <p>Frequency: <input type="text" id="frequency" value="0.1">
+        </p>
+        <p>Maximum contrast: <input type="text" id="max-contrast" value="0.02">
         </p>
         <p>Random location: <input type="checkbox" id="random-location">
         </p>
-        <div id="gabor" style="background:rgb(128,128,128);text-align: center;width: fit-content;"></div>
+        <p>Background noise: <input type="checkbox" id="background-noise">
+        </p>
+        <p style="display: none">Gaussian sigma: <input type="text" id="gaussian-sigma" value="0">
+        </p>
+        <div id="gabor" style="background:rgb(128,128,128);text-align: center;width: fit-content; margin: auto;"></div>
     </div>
 </body>
 

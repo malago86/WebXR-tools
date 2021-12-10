@@ -192,17 +192,21 @@ $(document).ready(function () {
     $("#gaussian-sigma").keyup(function () {
         showNoise();
     });
+
+    $("#noise-params").keyup(function () {
+        showNoise();
+    });
 });
 
 function showNoise() {
     if ($("#background-noise").prop("checked")) {
-        $("#gaussian-sigma").parent().show();
-        var noise = createNoiseField(1000, 128, 100, parseFloat($("#gaussian-sigma").val()));
+        $("#noise-params").show();
+        var noise = createNoiseField(1000, 128, parseFloat($("#noise-sigma").val()), parseFloat($("#gaussian-sigma").val()));
         rr = noise.toDataURL("image/png").split(';base64,')[1];
         document.getElementById("noise-vr").setAttribute("material", "src", "url(data:image/png;base64," + rr + ")");
         document.getElementById("noise-vr").setAttribute("material", "opacity", "1");
     } else {
-        $("#gaussian-sigma").parent().hide();
+        $("#noise-params").hide();
         document.getElementById("noise-vr").setAttribute("material", "opacity", "0");
     }
 }

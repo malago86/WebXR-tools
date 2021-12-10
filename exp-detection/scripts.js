@@ -23,6 +23,8 @@ var acceptingResponses = false;
 
 var doubleQuit = false;
 
+var backgroundColor = "#7F7F7F";
+
 AFRAME.registerComponent('button-listener', {
     init: function () {
         var el = this.el;
@@ -196,6 +198,15 @@ $(document).ready(function () {
     $("#noise-params").keyup(function () {
         showNoise();
     });
+
+    $('#background-color').minicolors({
+        control: 'hue',
+        change: function () {
+            backgroundColor = $('#background-color').val();
+            $("#sky").attr("color", backgroundColor);
+        },
+    });
+
 });
 
 function showNoise() {
@@ -278,7 +289,7 @@ function makeGaussKernel(sigma) {
 
 /**
 * Internal helper method
-* @param pixels - the Canvas pixles
+* @param pixels - the Canvas pixels
 * @param kernel - the Gaussian blur kernel
 * @param ch - the color channel to apply the blur on
 * @param gray - flag to show RGB or Grayscale image
@@ -417,7 +428,19 @@ function newTrial(response) {
         if (responses.length == maxTrials) {
             // END EXPERIMENT!
             document.getElementById("bottom-text").setAttribute("text", "value", "EXPERIMENT FINISHED!\n\nThanks for playing :)");
-            downloadObjectAsJson(responses, ($("#participant-name").val() == "" ? "Participant" : $("#participant-name").val()) + "-" + Date.now());
+            json = {};
+            $("#info").find(".input").each(function () {
+                if ($(this).attr("type") == "checkbox")
+                    if ($(this).prop("checked"))
+                        json[$(this).attr("id")] = true;
+                    else
+                        json[$(this).attr("id")] = false;
+                else
+                    json[$(this).attr("id")] = Number.isNaN(parseFloat($(this).val())) ? $(this).val() : parseFloat($(this).val())
+            });
+            json["responses"] = responses;
+
+            downloadObjectAsJson(json, json["participant"] + "-" + Date.now());
         } else {
             rr = gabor.toDataURL("image/png").split(';base64,')[1];
             document.getElementById("gabor-vr").setAttribute("material", "src", "url(data:image/png;base64," + rr + ")");
@@ -425,7 +448,7 @@ function newTrial(response) {
             document.getElementById("bottom-text").setAttribute("text", "value", "Press A for present, B for absent");
             document.getElementById("bottom-text").setAttribute("position", "0 -25 -50");
             document.getElementById("gabor-vr").setAttribute("visible", "true");
-            document.getElementById("sky").setAttribute("color", "rgb(128,128,128)");
+            document.getElementById("sky").setAttribute("color", backgroundColor);
             acceptingResponses = true;
             if ($("#random-location").prop("checked")) {
                 position = [Math.random() * positionVariation - positionVariation / 2, Math.random() * positionVariation - positionVariation / 2, -50];

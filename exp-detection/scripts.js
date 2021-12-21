@@ -431,10 +431,7 @@ function newTrial(response) {
             json = {};
             $("#info").find(".input").each(function () {
                 if ($(this).attr("type") == "checkbox")
-                    if ($(this).prop("checked"))
-                        json[$(this).attr("id")] = true;
-                    else
-                        json[$(this).attr("id")] = false;
+                    json[$(this).attr("id")] = $(this).prop("checked");
                 else
                     json[$(this).attr("id")] = Number.isNaN(parseFloat($(this).val())) ? $(this).val() : parseFloat($(this).val())
             });

@@ -137,11 +137,12 @@ $(document).ready(function () {
     //     $("#keypressed").attr("text", "value", e.key);
     // });
     $("#main").append('<a-plane id="noise-vr" material="transparent:true;opacity:0" width="100" height="100" position="0 0 -50.1"></a-plane>');
+    $("#main").append('<a-plane id="opaque-vr" material="color:black; transparent:true;opacity:1" width="100" height="100" visible="false" position="0 0 -49.1"></a-plane>');
 
     var gabor = createGabor(100, 0.1, 45, 10, 0.5, 1);
     $("#gabor").append(gabor);
     rr = gabor.toDataURL("image/png").split(';base64,')[1];
-    $("#main").append('<a-plane id="gabor-vr" material="src:url(data:image/png;base64,' + rr + ');transparent:true" width="10" height="10" position="0 0 -50"></a-plane>');
+    $("#main").append('<a-plane id="gabor-vr" material="src:url(data:image/png;base64,' + rr + ');transparent:true;opacity:1" width="10" height="10" position="0 0 -50"></a-plane>');
 
     // cues
     $("#main").append('<a-plane class="cue" material="color:black; transparent:true" width=".5" height="3" position="0 -7 -50"></a-plane>');
@@ -189,14 +190,26 @@ $(document).ready(function () {
 
     $("#background-noise").change(function () {
         showNoise();
+        if ($("#background-noise").prop("checked"))
+            document.getElementById("noise-vr").setAttribute("material", "opacity", "1");
+        else
+            document.getElementById("noise-vr").setAttribute("material", "opacity", "0");
     });
 
     $("#gaussian-sigma").keyup(function () {
         showNoise();
+        if ($("#background-noise").prop("checked"))
+            document.getElementById("noise-vr").setAttribute("material", "opacity", "1");
+        else
+            document.getElementById("noise-vr").setAttribute("material", "opacity", "0");
     });
 
     $("#noise-params").keyup(function () {
         showNoise();
+        if ($("#background-noise").prop("checked"))
+            document.getElementById("noise-vr").setAttribute("material", "opacity", "1");
+        else
+            document.getElementById("noise-vr").setAttribute("material", "opacity", "0");
     });
 
     $('#background-color').minicolors({
@@ -209,17 +222,20 @@ $(document).ready(function () {
 
 });
 
-function showNoise() {
-    if ($("#background-noise").prop("checked")) {
-        $("#noise-params").show();
-        var noise = createNoiseField(1000, 128, parseFloat($("#noise-sigma").val()), parseFloat($("#gaussian-sigma").val()));
-        rr = noise.toDataURL("image/png").split(';base64,')[1];
-        document.getElementById("noise-vr").setAttribute("material", "src", "url(data:image/png;base64," + rr + ")");
-        document.getElementById("noise-vr").setAttribute("material", "opacity", "1");
-    } else {
-        $("#noise-params").hide();
-        document.getElementById("noise-vr").setAttribute("material", "opacity", "0");
-    }
+async function showNoise() {
+    if ($("#background-noise").prop("checked"))
+        var noise = await createNoiseField(1000, 128, parseFloat($("#noise-sigma").val()), parseFloat($("#gaussian-sigma").val()));
+
+    return new Promise(resolve => {
+        if ($("#background-noise").prop("checked")) {
+            $("#noise-params").show();
+            rr = noise.toDataURL("image/png").split(';base64,')[1];
+            document.getElementById("noise-vr").setAttribute("material", "src", "url(data:image/png;base64," + rr + ")");
+        } else {
+            $("#noise-params").hide();
+        }
+        resolve();
+    });
 }
 
 function addAlignmentSquares(n = 10) {
@@ -240,32 +256,34 @@ function addAlignmentSquares(n = 10) {
 }
 
 function createNoiseField(side, mean, std, gaussian) {
-    var noise = document.createElement("canvas");
-    noise.setAttribute("id", "noise");
-    noise.width = side;
-    noise.height = side;
-    var ctx = noise.getContext("2d");
-    ctx.createImageData(side, side);
-    idata = ctx.getImageData(0, 0, side, side);
-    for (var x = 0; x < side; x++) {
-        for (var y = 0; y < side; y++) {
-            amp = (Math.random() - 0.5) * std;
-            idata.data[(y * side + x) * 4] = mean + amp;     // red
-            idata.data[(y * side + x) * 4 + 1] = mean + amp; // green
-            idata.data[(y * side + x) * 4 + 2] = mean + amp; // blue
-            idata.data[(y * side + x) * 4 + 3] = 255;
+    return new Promise(resolve => {
+        var noise = document.createElement("canvas");
+        noise.setAttribute("id", "noise");
+        noise.width = side;
+        noise.height = side;
+        var ctx = noise.getContext("2d");
+        ctx.createImageData(side, side);
+        idata = ctx.getImageData(0, 0, side, side);
+        for (var x = 0; x < side; x++) {
+            for (var y = 0; y < side; y++) {
+                amp = (Math.random() - 0.5) * std;
+                idata.data[(y * side + x) * 4] = mean + amp;     // red
+                idata.data[(y * side + x) * 4 + 1] = mean + amp; // green
+                idata.data[(y * side + x) * 4 + 2] = mean + amp; // blue
+                idata.data[(y * side + x) * 4 + 3] = 255;
+            }
         }
-    }
 
-    if (gaussian > 0) {
-        kernel = makeGaussKernel(gaussian);
-        for (var ch = 0; ch < 3; ch++) {
-            gauss_internal(idata, kernel, ch, false);
+        if (gaussian > 0) {
+            kernel = makeGaussKernel(gaussian);
+            for (var ch = 0; ch < 3; ch++) {
+                gauss_internal(idata, kernel, ch, false);
+            }
         }
-    }
-    ctx.putImageData(idata, 0, 0);
+        ctx.putImageData(idata, 0, 0);
 
-    return noise;
+        resolve(noise);
+    });
 }
 
 function makeGaussKernel(sigma) {
@@ -389,16 +407,19 @@ function contrastImage(imageData, contrast) {
     return imageData;
 }
 
-function newTrial(response) {
+async function newTrial(response) {
     stimulusOff = Date.now();
     acceptingResponses = false;
 
     str = present == response ? "Correct!" : "Incorrect!";
+    // document.getElementById("opaque-vr").setAttribute("material", "opacity", "1");
+    $("#opaque-vr").attr("visible", "true");
     document.getElementById("bottom-text").setAttribute("text", "value", str + "\n\n" + (responses.length + 1) + "/" + maxTrials);
-    document.getElementById("bottom-text").setAttribute("position", "0 0 -50");
-    document.getElementById("gabor-vr").setAttribute("visible", "false");
+    document.getElementById("bottom-text").setAttribute("position", "0 0 -49");
+    document.getElementById("gabor-vr").setAttribute("material", "opacity", "0");
     Array.from(document.getElementsByClassName("cue")).forEach(function (e) { e.setAttribute("material", "opacity", "0") });
     document.getElementById("sky").setAttribute("color", "rgb(0,0,0)");
+    document.getElementById("noise-vr").setAttribute("material", "opacity", "0");
     responses.push({
         present: present,
         contrast: contrast,
@@ -416,15 +437,15 @@ function newTrial(response) {
     if (!present) {
         contrast = 0;
     } else {
-        contrast = parseInt(Math.random() * 10 + 1) / 10 * parseFloat($("#max-contrast").val()); // between 0 and 0.1
+        contrast = parseInt(Math.random() * parseInt($("#steps-contrast").val()) + 1) / parseInt($("#steps-contrast").val()) * parseFloat($("#max-contrast").val()); // between 0 and 0.1
     }
 
     // contrast = 0.2;
     angle = Math.random() * 360;
 
     gabor = createGabor(100, $("#frequency").val(), angle, $("#size-std").val(), 0.5, contrast);
-
-    setTimeout(function () {
+    await showNoise();
+    setTimeout(async function () {
         if (responses.length == maxTrials) {
             // END EXPERIMENT!
             document.getElementById("bottom-text").setAttribute("text", "value", "EXPERIMENT FINISHED!\n\nThanks for playing :)");
@@ -443,9 +464,8 @@ function newTrial(response) {
             document.getElementById("gabor-vr").setAttribute("material", "src", "url(data:image/png;base64," + rr + ")");
 
             document.getElementById("bottom-text").setAttribute("text", "value", "Press A for present, B for absent");
-            document.getElementById("bottom-text").setAttribute("position", "0 -25 -50");
-            document.getElementById("gabor-vr").setAttribute("visible", "true");
-            document.getElementById("sky").setAttribute("color", backgroundColor);
+            document.getElementById("bottom-text").setAttribute("position", "0 -25 -49");
+
             acceptingResponses = true;
             if ($("#random-location").prop("checked")) {
                 position = [Math.random() * positionVariation - positionVariation / 2, Math.random() * positionVariation - positionVariation / 2, -50];
@@ -454,6 +474,14 @@ function newTrial(response) {
             } else {
                 Array.from(document.getElementsByClassName("cue")).forEach(function (e) { e.setAttribute("material", "opacity", "1") });
             }
+            if ($("#background-noise").prop("checked"))
+                document.getElementById("noise-vr").setAttribute("material", "opacity", "1");
+            else
+                document.getElementById("noise-vr").setAttribute("material", "opacity", "0");
+            document.getElementById("gabor-vr").setAttribute("material", "opacity", "1");
+            // document.getElementById("opaque-vr").setAttribute("material", "opacity", "0");
+            $("#opaque-vr").attr("visible", "false");
+            document.getElementById("sky").setAttribute("color", backgroundColor);
             stimulusOn = Date.now();
         }
     }, 1000);

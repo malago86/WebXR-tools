@@ -15,8 +15,6 @@ var responses = [];
 var present = true, contrast = 1, position = [0, 0, -50];
 var stimulusOn = -1, stimulusOff = -1;
 
-var maxTrials = 0;
-
 var positionVariation = 70;
 
 var acceptingResponses = false;
@@ -137,7 +135,7 @@ $(document).ready(function () {
     //     $("#keypressed").attr("text", "value", e.key);
     // });
     $("#main").append('<a-plane id="noise-vr" material="transparent:true;opacity:0" width="100" height="100" position="0 0 -50.1"></a-plane>');
-    $("#main").append('<a-plane id="opaque-vr" material="color:black; transparent:true;opacity:1" width="100" height="100" visible="false" position="0 0 -49.1"></a-plane>');
+    $("#main").append('<a-plane id="opaque-vr" material="color:' + $('#background-color').val() + '; transparent:true;opacity:1" width="200" height="200" visible="false" position="0 0 -49.1"></a-plane>');
 
     var gabor = createGabor(100, 0.1, 45, 10, 0.5, 1);
     $("#gabor").append(gabor);
@@ -154,7 +152,6 @@ $(document).ready(function () {
 
     stimulusOn = Date.now();
     acceptingResponses = true;
-    maxTrials = parseInt($("#num-trials").val());
     $("#info").on("keypress", function (e) {
         e.stopPropagation();
     });
@@ -170,7 +167,6 @@ $(document).ready(function () {
     });
 
     $("#myEnterVRButton").click(function () {
-        maxTrials = parseInt($("#num-trials").val());
         stimulusOn = Date.now();
     });
 
@@ -217,6 +213,7 @@ $(document).ready(function () {
         change: function () {
             backgroundColor = $('#background-color').val();
             $("#sky").attr("color", backgroundColor);
+            $("#opaque-vr").attr("color", backgroundColor);
         },
     });
 
@@ -414,7 +411,7 @@ async function newTrial(response) {
     str = present == response ? "Correct!" : "Incorrect!";
     // document.getElementById("opaque-vr").setAttribute("material", "opacity", "1");
     $("#opaque-vr").attr("visible", "true");
-    document.getElementById("bottom-text").setAttribute("text", "value", str + "\n\n" + (responses.length + 1) + "/" + maxTrials);
+    document.getElementById("bottom-text").setAttribute("text", "value", str + "\n\n" + (responses.length + 1) + "/" + parseInt($("#num-trials").val()));
     document.getElementById("bottom-text").setAttribute("position", "0 0 -49");
     document.getElementById("gabor-vr").setAttribute("material", "opacity", "0");
     Array.from(document.getElementsByClassName("cue")).forEach(function (e) { e.setAttribute("material", "opacity", "0") });
@@ -446,7 +443,7 @@ async function newTrial(response) {
     gabor = createGabor(100, $("#frequency").val(), angle, $("#size-std").val(), 0.5, contrast);
     await showNoise();
     setTimeout(async function () {
-        if (responses.length == maxTrials) {
+        if (responses.length >= parseInt($("#num-trials").val())) {
             // END EXPERIMENT!
             document.getElementById("bottom-text").setAttribute("text", "value", "EXPERIMENT FINISHED!\n\nThanks for playing :)");
             json = {};
@@ -454,11 +451,11 @@ async function newTrial(response) {
                 if ($(this).attr("type") == "checkbox")
                     json[$(this).attr("id")] = $(this).prop("checked");
                 else
-                    json[$(this).attr("id")] = Number.isNaN(parseFloat($(this).val())) ? $(this).val() : parseFloat($(this).val())
+                    json[$(this).attr("id")] = isNaN($(this).val()) ? $(this).val() : parseFloat($(this).val())
             });
             json["responses"] = responses;
 
-            downloadObjectAsJson(json, json["participant"] + "-" + Date.now());
+            downloadObjectAsJson(json, json["participant-id"] + "-" + Date.now());
         } else {
             rr = gabor.toDataURL("image/png").split(';base64,')[1];
             document.getElementById("gabor-vr").setAttribute("material", "src", "url(data:image/png;base64," + rr + ")");

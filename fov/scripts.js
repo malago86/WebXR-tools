@@ -145,7 +145,7 @@ function changeCircle(dir) {
         // document.getElementById("size-text").setAttribute("text", "value", Math.round(1000 * 0.33 / Math.tan(1 * Math.PI / 180) * this.object3D.scale.x) / 1000);
         fov += dir;
         e.setAttribute("geometry", "radiusInner", fov * Math.tan(1 * Math.PI / 180));
-        e.setAttribute("geometry", "radiusOuter", (fov + 1) * Math.tan(1 * Math.PI / 180));
+        e.setAttribute("geometry", "radiusOuter", (fov + 2) * Math.tan(1 * Math.PI / 180));
         document.getElementById("size-text").setAttribute("text", "value", fov.toFixed(1));
     })
 }

@@ -1,0 +1,54 @@
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <link href="../style.css" rel="stylesheet">
+    <script src="../lib/jquery-3.6.0.min.js" type="text/javascript"> </script>
+    <script src="../lib/aframe.min.js" type="text/javascript"> </script>
+    <script src="scripts.js" type="text/javascript"> </script>
+    <title>Field of View test</title>
+</head>
+
+<body>
+    <a-scene renderer="foveationLevel: 3; antialias: false" vr-mode-ui="enterVRButton: #myEnterVRButton;">
+        <a-sky color="#000000"></a-sky>
+        <a-entity light="type: ambient; color: #FFF"></a-entity>
+        <a-entity oculus-touch-controls="hand: left" thumbstick-logging></a-entity>
+        <a-entity oculus-touch-controls="hand: right" thumbstick-logging button-listener></a-entity>
+
+        <a-entity vive-controls="hand: left" thumbstick-logging></a-entity>
+        <a-entity vive-controls="hand: right" thumbstick-logging button-listener></a-entity>
+
+        <a-entity daydream-controls="hand: right" thumbstick-logging button-listener></a-entity>
+        <a-entity gearvr-controls="hand: right" thumbstick-logging button-listener></a-entity>
+        <a-entity oculus-go-controls="hand: right" thumbstick-logging button-listener></a-entity>
+
+        <a-entity camera rotation-reader look-controls="hmdEnabled: false" id="camera">
+            <a-entity id="white-balance" geometry="primitive: plane; height: 10; width: 10" position="0 0 -1"
+                material="color: white; opacity: 1; repeat: 50 50" visible="false"></a-entity>
+            <a-entity id="alignment" visible="false"></a-entity>
+            <a-entity id="main">
+                <!-- <a-cursor></a-cursor> -->
+
+                <!-- start circle at 20 degrees of visual angle -->
+                <a-entity material="color: white"
+                    geometry="primitive: ring; radiusInner: 0.3491012985643517; radiusOuter: 0.3665563634925693;"
+                    position="0.0 -0.0 -1" id="static" class="fov-circle">
+                </a-entity>
+
+                <a-entity id="size-text" text="value: 20; align: center; width: 1" position="0 0 -0.98"></a-entity>
+
+                <a-entity text="value: dva; align: center; width: 0.7" position="0 -0.05 -0.98"></a-entity>
+
+            </a-entity>
+        </a-entity>
+        <a id="myEnterVRButton" href="#">START!</a>
+    </a-scene>
+    <div id="info">
+        <p id="timeOverlay"></p>
+        <div id="fullscreen" class="button">Toggle fullscreen!</div>
+        <div id="reset" class="button">Reset</div>
+    </div>
+</body>
+
+</html>

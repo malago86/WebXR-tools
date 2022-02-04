@@ -43,11 +43,11 @@ AFRAME.registerComponent('button-listener', {
         var el = this.el;
 
         el.addEventListener('abuttondown', function (evt) {
-            changeCircle(1);
+            changeCircle(0.1);
         });
 
         el.addEventListener('bbuttondown', function (evt) {
-            changeCircle(-1);
+            changeCircle(-0.1);
         });
 
         el.addEventListener('trackpadchanged', function (evt) {
@@ -123,14 +123,14 @@ $(document).ready(function () {
         $(".fov-circle").each(function (i, e) {
             fov = 20;
             e.setAttribute("geometry", "radiusInner", fov * Math.tan(1 * Math.PI / 180));
-            e.setAttribute("geometry", "radiusOuter", (fov + 1) * Math.tan(1 * Math.PI / 180));
+            e.setAttribute("geometry", "radiusOuter", (fov + 2) * Math.tan(1 * Math.PI / 180));
             document.getElementById("size-text").setAttribute("text", "value", fov.toFixed(1));
         })
     });
 
     $(".fov-circle").each(function (i, e) {
         e.setAttribute("geometry", "radiusInner", fov * Math.tan(1 * Math.PI / 180));
-        e.setAttribute("geometry", "radiusOuter", (fov + 1) * Math.tan(1 * Math.PI / 180));
+        e.setAttribute("geometry", "radiusOuter", (fov + 2) * Math.tan(1 * Math.PI / 180));
         document.getElementById("size-text").setAttribute("text", "value", fov.toFixed(1));
     });
 });

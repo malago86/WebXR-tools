@@ -26,12 +26,14 @@ body {
 
 .button{
   font-family: 'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif;
-  margin-top:2px;
+  margin-bottom:10px;
   text-align:center;
   padding:2px;
   cursor:pointer;
   border:1px solid white;
   display: block;
+  min-height:40px;
+  line-height: 40px;
 }
 .button:hover{
   background:gray

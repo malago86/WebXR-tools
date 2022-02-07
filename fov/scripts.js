@@ -122,17 +122,19 @@ $(document).ready(function () {
     $("#reset").click(function (event) {
         $(".fov-circle").each(function (i, e) {
             fov = 20;
-            e.setAttribute("geometry", "radiusInner", fov * Math.tan(1 * Math.PI / 180));
-            e.setAttribute("geometry", "radiusOuter", (fov + 2) * Math.tan(1 * Math.PI / 180));
+            e.setAttribute("geometry", "radiusInner", Math.tan(fov * Math.PI / 180));
+            e.setAttribute("geometry", "radiusOuter", Math.tan((fov + 2) * Math.PI / 180));
             document.getElementById("size-text").setAttribute("text", "value", fov.toFixed(1));
         })
     });
 
     $(".fov-circle").each(function (i, e) {
-        e.setAttribute("geometry", "radiusInner", fov * Math.tan(1 * Math.PI / 180));
-        e.setAttribute("geometry", "radiusOuter", (fov + 2) * Math.tan(1 * Math.PI / 180));
+        e.setAttribute("geometry", "radiusInner", Math.tan(fov * Math.PI / 180));
+        e.setAttribute("geometry", "radiusOuter", Math.tan((fov + 2) * Math.PI / 180));
         document.getElementById("size-text").setAttribute("text", "value", fov.toFixed(1));
     });
+
+    $("#info").append("<div>FOV camera: <b>" + AFRAME.scenes[0].camera.fov + "</b> deg</div>")
 });
 
 function changeCircle(dir) {
@@ -144,8 +146,8 @@ function changeCircle(dir) {
         // this.object3D.scale = scale;
         // document.getElementById("size-text").setAttribute("text", "value", Math.round(1000 * 0.33 / Math.tan(1 * Math.PI / 180) * this.object3D.scale.x) / 1000);
         fov += dir;
-        e.setAttribute("geometry", "radiusInner", fov * Math.tan(1 * Math.PI / 180));
-        e.setAttribute("geometry", "radiusOuter", (fov + 2) * Math.tan(1 * Math.PI / 180));
+        e.setAttribute("geometry", "radiusInner", Math.tan(fov * Math.PI / 180));
+        e.setAttribute("geometry", "radiusOuter", Math.tan((fov + 2) * Math.PI / 180));
         document.getElementById("size-text").setAttribute("text", "value", fov.toFixed(1));
     })
 }

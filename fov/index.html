@@ -10,7 +10,7 @@
 </head>
 
 <body>
-    <a-scene renderer="foveationLevel: 3; antialias: false" vr-mode-ui="enterVRButton: #myEnterVRButton;">
+    <a-scene renderer="foveationLevel: 0; antialias: false" vr-mode-ui="enterVRButton: #myEnterVRButton;">
         <a-sky color="#000000"></a-sky>
         <a-entity light="type: ambient; color: #FFF"></a-entity>
         <a-entity oculus-touch-controls="hand: left" thumbstick-logging></a-entity>
@@ -32,11 +32,11 @@
 
                 <!-- start circle at 20 degrees of visual angle -->
                 <a-entity material="color: white"
-                    geometry="primitive: ring; radiusInner: 0.3491012985643517; radiusOuter: 0.3665563634925693;"
+                    geometry="primitive: ring; radiusInner: 0.36397023426620234; radiusOuter: 0.4040262258351568;"
                     position="0.0 -0.0 -1" id="static" class="fov-circle">
                 </a-entity>
 
-                <a-entity id="size-text" text="value: 20; align: center; width: 1" position="0 0 -0.98"></a-entity>
+                <a-entity id="size-text" text="value: 20.0; align: center; width: 1" position="0 0 -0.98"></a-entity>
 
                 <a-entity text="value: dva; align: center; width: 0.7" position="0 -0.05 -0.98"></a-entity>
 

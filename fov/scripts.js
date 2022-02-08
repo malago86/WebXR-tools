@@ -11,7 +11,7 @@ var thumbstickMoving = false;
 
 var sceneNumber = 0;
 
-var fov = 20;
+var fov = 40;
 
 
 AFRAME.registerComponent("rotation-reader", {
@@ -110,44 +110,53 @@ $(document).ready(function () {
     $('html').keypress(function (e) {
     });
 
-    $(document).on('keypress', function (event) {
-        let keycode = (event.keyCode ? event.keyCode : event.which);
-        if (keycode == '97') { //a
-            changeCircle(0.1);
-        } else if (keycode == "98") { //b
-            changeCircle(-0.1);
-        }
+    $(document).keydown(function (event) {
+        let keycode = event.originalEvent.key;
+
+        step = 0.1;
+        if (event.ctrlKey) step = 1;
+
+        if (keycode == 'a') { //a
+            changeCircle(step);
+        } else if (keycode == "b") { //b
+            changeCircle(-step);
+        };
+        return false;
     });
 
     $("#reset").click(function (event) {
         $(".fov-circle").each(function (i, e) {
-            fov = 20;
-            e.setAttribute("geometry", "radiusInner", Math.tan(fov * Math.PI / 180));
-            e.setAttribute("geometry", "radiusOuter", Math.tan((fov + 2) * Math.PI / 180));
+            fov = 40;
+            e.setAttribute("geometry", "radiusInner", Math.tan(fov / 2 * Math.PI / 180));
+            e.setAttribute("geometry", "radiusOuter", Math.tan((fov / 2 + 2) * Math.PI / 180));
             document.getElementById("size-text").setAttribute("text", "value", fov.toFixed(1));
         })
     });
 
     $(".fov-circle").each(function (i, e) {
-        e.setAttribute("geometry", "radiusInner", Math.tan(fov * Math.PI / 180));
-        e.setAttribute("geometry", "radiusOuter", Math.tan((fov + 2) * Math.PI / 180));
+        e.setAttribute("geometry", "radiusInner", Math.tan(fov / 2 * Math.PI / 180));
+        e.setAttribute("geometry", "radiusOuter", Math.tan((fov / 2 + 2) * Math.PI / 180));
         document.getElementById("size-text").setAttribute("text", "value", fov.toFixed(1));
     });
 
-    $("#info").append("<div>FOV camera: <b>" + AFRAME.scenes[0].camera.fov + "</b> deg</div>")
+    $(window).on('resize', function () {
+        showCameraFov();
+    });
+    showCameraFov();
 });
+
+function showCameraFov() {
+    camera = AFRAME.scenes[0].camera;
+    $("#fov-horizontal b").text((2 * Math.atan(Math.tan(camera.fov * Math.PI / 180 / 2) * camera.aspect) * 180 / Math.PI).toFixed(1));
+    $("#fov-vertical b").text(camera.fov.toFixed(1));
+}
 
 function changeCircle(dir) {
 
     $(".fov-circle").each(function (i, e) {
-        // scale = this.object3D.scale;
-        // scale.x += dir;
-        // scale.y += dir;
-        // this.object3D.scale = scale;
-        // document.getElementById("size-text").setAttribute("text", "value", Math.round(1000 * 0.33 / Math.tan(1 * Math.PI / 180) * this.object3D.scale.x) / 1000);
         fov += dir;
-        e.setAttribute("geometry", "radiusInner", Math.tan(fov * Math.PI / 180));
-        e.setAttribute("geometry", "radiusOuter", Math.tan((fov + 2) * Math.PI / 180));
+        e.setAttribute("geometry", "radiusInner", Math.tan(fov / 2 * Math.PI / 180));
+        e.setAttribute("geometry", "radiusOuter", Math.tan((fov / 2 + 2) * Math.PI / 180));
         document.getElementById("size-text").setAttribute("text", "value", fov.toFixed(1));
     })
 }

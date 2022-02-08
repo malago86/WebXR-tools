@@ -51,21 +51,11 @@ AFRAME.registerComponent('button-listener', {
         });
 
         el.addEventListener('trackpadchanged', function (evt) {
-            $(".flying").each(function (fs) {
-                // this.object3D.position.x = 0;
-                if (running)
-                    this.pause();
-                else
-                    this.play()
-            });
-            running = !running;
+            showCameraFov();
         });
 
         el.addEventListener('triggerdown', function (evt) {
-            $(".flying").each(function (fs) {
-                this.object3D.position.x = 0;
-            });
-            running = false;
+            showCameraFov();
         });
 
         el.addEventListener('gripdown', function (evt) {

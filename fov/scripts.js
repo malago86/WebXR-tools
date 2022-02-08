@@ -126,7 +126,7 @@ $(document).ready(function () {
 
     $("#reset").click(function (event) {
         $(".fov-circle").each(function (i, e) {
-            fov = camera.fov.toFixed(1);
+            fov = camera.fov;
             e.setAttribute("geometry", "radiusInner", Math.tan(fov / 2 * Math.PI / 180));
             e.setAttribute("geometry", "radiusOuter", Math.tan((fov / 2 + 2) * Math.PI / 180));
             document.getElementById("size-text").setAttribute("text", "value", fov.toFixed(1));

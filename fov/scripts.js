@@ -43,11 +43,11 @@ AFRAME.registerComponent('button-listener', {
         var el = this.el;
 
         el.addEventListener('abuttondown', function (evt) {
-            changeCircle(0.1);
+            changeCircle(1);
         });
 
         el.addEventListener('bbuttondown', function (evt) {
-            changeCircle(-0.1);
+            changeCircle(-1);
         });
 
         el.addEventListener('trackpadchanged', function (evt) {
@@ -147,8 +147,11 @@ $(document).ready(function () {
 
 function showCameraFov() {
     camera = AFRAME.scenes[0].camera;
-    $("#fov-horizontal b").text((2 * Math.atan(Math.tan(camera.fov * Math.PI / 180 / 2) * camera.aspect) * 180 / Math.PI).toFixed(1));
+    h = (2 * Math.atan(Math.tan(camera.fov * Math.PI / 180 / 2) * camera.aspect) * 180 / Math.PI).toFixed(1);
+    $("#fov-horizontal b").text(h);
     $("#fov-vertical b").text(camera.fov.toFixed(1));
+    document.getElementById("size-text-horizontal").setAttribute("text", "value", "FOVh " + h);
+    document.getElementById("size-text-vertical").setAttribute("text", "value", "FOVh " + camera.fov.toFixed(1));
 }
 
 function changeCircle(dir) {

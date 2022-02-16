@@ -38,17 +38,27 @@
                 <a-plane id="blue" class="bar" material="color:#0000FF; transparent:true" width=".5" height="3"
                     position="0 -3 -50"></a-plane>
 
+                <a-plane id="red2" class="bar2" material="color:#FF0000; transparent:true" width=".5" height="3"
+                    position="0 3 -50" visible="false">
+                </a-plane>
+                <a-plane id="green2" class="bar2" material="color:#00FF00; transparent:true" width=".5" height="3"
+                    position="0 0 -50" visible="false">
+                </a-plane>
+                <a-plane id="blue2" class="bar2" material="color:#0000FF; transparent:true" width=".5" height="3"
+                    position="0 -3 -50" visible="false">
+                </a-plane>
+
                 <a-entity id="dva-text" text="value: 0 dva; align: center; width: 0.7" position="0 -0.15 -0.98">
                 </a-entity>
 
-                <a-entity id="displacement-red" text="value: 0.0; color:red; align: center; width: .7"
+                <a-entity id="displacement-red" text="value: 0.0 (0 %); color:red; align: center; width: .7"
                     position="0 -0.25 -0.98">
                 </a-entity>
-                <a-entity id="displacement-blue" text="value: 0.0; color:#44CCFF; align: center; width: .7"
+                <a-entity id="displacement-blue" text="value: 0.0 (0 %); color:#44CCFF; align: center; width: .7"
                     position="0 -0.30 -0.98">
                 </a-entity>
 
-                <a-circle id="selected-bar" color="#44CCFF" radius="0.007" position="-.05 -0.3 -0.98" id="static">
+                <a-circle id="selected-bar" color="#44CCFF" radius="0.007" position="-.11 -0.3 -0.98" id="static">
                 </a-circle>
 
 

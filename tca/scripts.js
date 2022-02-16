@@ -118,22 +118,6 @@ $(document).ready(function () {
         };
         return false;
     });
-
-    $("#reset").click(function (event) {
-        $(".fov-circle").each(function (i, e) {
-            fov = camera.fov;
-            e.setAttribute("geometry", "radiusInner", Math.tan(fov / 2 * Math.PI / 180));
-            e.setAttribute("geometry", "radiusOuter", Math.tan((fov / 2 + 2) * Math.PI / 180));
-            document.getElementById("size-text").setAttribute("text", "value", fov.toFixed(1));
-        })
-    });
-
-    $(".fov-circle").each(function (i, e) {
-        e.setAttribute("geometry", "radiusInner", Math.tan(fov / 2 * Math.PI / 180));
-        e.setAttribute("geometry", "radiusOuter", Math.tan((fov / 2 + 2) * Math.PI / 180));
-        document.getElementById("size-text").setAttribute("text", "value", fov.toFixed(1));
-    });
-
 });
 
 function changeBar(newBar) {
@@ -152,18 +136,38 @@ function moveAll(dir) {
     $(".bar").each(function (i, e) {
         e.object3D.position.x = dva;
     });
+    console.log(dva);
+    $(".bar2").each(function (i, e) {
+        if (dva == 0)
+            $(e).attr("visible", "false");
+        else
+            $(e).attr("visible", "true");
+        e.object3D.position.x = -dva;
+    });
+
     document.getElementById("dva-text").setAttribute("text", "value", Math.abs(dva) + " dva");
-    document.getElementById("dva-text").object3D.position.x = dva / 51;
-    document.getElementById("displacement-red").setAttribute("text", "value", $("#red")[0].object3D.position.x.toFixed(1));
-    document.getElementById("displacement-blue").setAttribute("text", "value", $("#blue")[0].object3D.position.x.toFixed(1));
+    // document.getElementById("dva-text").object3D.position.x = dva / 51;
+    document.getElementById("displacement-red").setAttribute("text", "value", Math.abs($("#red")[0].object3D.position.x.toFixed(1)) + " (0 %)");
+    document.getElementById("displacement-blue").setAttribute("text", "value", Math.abs($("#blue")[0].object3D.position.x.toFixed(1)) + " (0 %)");
 }
 
 function moveBar(dir) {
-    if (bar)
-        e = $("#red")[0];
-    else
-        e = $("#blue")[0];
-    e.object3D.position.x += dir;
-    document.getElementById("displacement-red").setAttribute("text", "value", $("#red")[0].object3D.position.x.toFixed(1));
-    document.getElementById("displacement-blue").setAttribute("text", "value", $("#blue")[0].object3D.position.x.toFixed(1));
+    if (bar) {
+        $("#red")[0].object3D.position.x += dir;
+        $("#red2")[0].object3D.position.x -= dir;
+    } else {
+        $("#blue")[0].object3D.position.x += dir;
+        $("#blue2")[0].object3D.position.x -= dir;
+    }
+    if (dva > 0) {
+        document.getElementById("displacement-red").setAttribute("text", "value", Math.abs($("#red")[0].object3D.position.x.toFixed(1)) +
+            " (" + (Math.abs($("#red")[0].object3D.position.x.toFixed(1)) * 100 / dva - 100).toFixed(2) + " %)");
+        document.getElementById("displacement-blue").setAttribute("text", "value", Math.abs($("#blue")[0].object3D.position.x.toFixed(1)) +
+            " (" + (Math.abs($("#blue")[0].object3D.position.x.toFixed(1)) * 100 / dva - 100).toFixed(2) + " %)");
+    } else {
+        document.getElementById("displacement-red").setAttribute("text", "value", Math.abs($("#red")[0].object3D.position.x.toFixed(1)) +
+            " (" + (Math.abs($("#red")[0].object3D.position.x.toFixed(1)) * 100).toFixed(2) + " %)");
+        document.getElementById("displacement-blue").setAttribute("text", "value", Math.abs($("#blue")[0].object3D.position.x.toFixed(1)) +
+            " (" + (Math.abs($("#blue")[0].object3D.position.x.toFixed(1)) * 100).toFixed(2) + " %)");
+    }
 }

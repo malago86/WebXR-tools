@@ -1,0 +1,70 @@
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <link href="../style.css" rel="stylesheet">
+    <script src="../lib/jquery-3.6.0.min.js" type="text/javascript"> </script>
+    <script src="../lib/aframe.min.js" type="text/javascript"> </script>
+    <script src="scripts.js" type="text/javascript"> </script>
+    <title>Transverse Chromatic Aberration Test</title>
+</head>
+
+<body>
+    <a-scene renderer="foveationLevel: 0; antialias: false" vr-mode-ui="enterVRButton: #myEnterVRButton;">
+        <a-sky color="#000000"></a-sky>
+        <a-entity light="type: ambient; color: #FFF"></a-entity>
+        <a-entity oculus-touch-controls="hand: left" thumbstick-logging></a-entity>
+        <a-entity oculus-touch-controls="hand: right" thumbstick-logging button-listener></a-entity>
+
+        <a-entity vive-controls="hand: left" thumbstick-logging></a-entity>
+        <a-entity vive-controls="hand: right" thumbstick-logging button-listener></a-entity>
+
+        <a-entity daydream-controls="hand: right" thumbstick-logging button-listener></a-entity>
+        <a-entity gearvr-controls="hand: right" thumbstick-logging button-listener></a-entity>
+        <a-entity oculus-go-controls="hand: right" thumbstick-logging button-listener></a-entity>
+
+        <a-entity camera rotation-reader id="camera">
+            <a-entity id="white-balance" geometry="primitive: plane; height: 10; width: 10" position="0 0 -1"
+                material="color: white; opacity: 1; repeat: 50 50" visible="false"></a-entity>
+            <a-entity id="alignment" visible="false"></a-entity>
+            <a-entity id="main">
+                <!-- <a-cursor></a-cursor> -->
+
+                <a-plane id="red" class="bar" material="color:#FF0000; transparent:true" width=".5" height="3"
+                    position="0 3 -50">
+                </a-plane>
+                <a-plane id="green" class="bar" material="color:#00FF00; transparent:true" width=".5" height="3"
+                    position="0 0 -50"></a-plane>
+                <a-plane id="blue" class="bar" material="color:#0000FF; transparent:true" width=".5" height="3"
+                    position="0 -3 -50"></a-plane>
+
+                <a-entity id="dva-text" text="value: 0 dva; align: center; width: 0.7" position="0 -0.15 -0.98">
+                </a-entity>
+
+                <a-entity id="displacement-red" text="value: 0.0; color:red; align: center; width: .7"
+                    position="0 -0.25 -0.98">
+                </a-entity>
+                <a-entity id="displacement-blue" text="value: 0.0; color:#44CCFF; align: center; width: .7"
+                    position="0 -0.30 -0.98">
+                </a-entity>
+
+                <a-circle id="selected-bar" color="#44CCFF" radius="0.007" position="-.05 -0.3 -0.98" id="static">
+                </a-circle>
+
+
+            </a-entity>
+        </a-entity>
+        <a id="myEnterVRButton" href="#">START!</a>
+    </a-scene>
+    <div id="info">
+        <p id="timeOverlay"></p>
+        <div id="fullscreen" class="button">Toggle fullscreen!</div>
+        <ul>
+            <li>Move bar: Left, Right</li>
+            <li>Change bar: Up, Down</li>
+            <li>Move all: +, -</li>
+        </ul>
+    </div>
+</body>
+
+</html>

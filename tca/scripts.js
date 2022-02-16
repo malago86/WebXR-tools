@@ -9,10 +9,10 @@ var sensorPos = new THREE.Quaternion();
 
 var thumbstickMoving = false;
 
-var sceneNumber = 0;
-
-var fov = 40;
-
+var bar = false;
+var step = 0.1;
+var stepDva = 5;
+var dva = 0;
 
 AFRAME.registerComponent("rotation-reader", {
     tick: function (time, timeDelta) {
@@ -43,15 +43,15 @@ AFRAME.registerComponent('button-listener', {
         var el = this.el;
 
         el.addEventListener('abuttondown', function (evt) {
-            changeCircle(1);
+            moveBar(step);
         });
 
         el.addEventListener('bbuttondown', function (evt) {
-            changeCircle(-1);
+            moveBar(-step);
         });
 
         el.addEventListener('trackpadchanged', function (evt) {
-            showCameraFov();
+            bar = !bar;
         });
 
         el.addEventListener('triggerdown', function (evt) {
@@ -102,14 +102,19 @@ $(document).ready(function () {
 
     $(document).keydown(function (event) {
         let keycode = event.originalEvent.key;
-
-        step = 0.1;
-        if (event.ctrlKey) step = 1;
-
-        if (keycode == 'a') { //a
-            changeCircle(step);
-        } else if (keycode == "b") { //b
-            changeCircle(-step);
+        // console.log(keycode);
+        if (keycode == 'ArrowLeft') { //a
+            moveBar(-step);
+        } else if (keycode == "ArrowRight") { //b
+            moveBar(step);
+        } else if (keycode == "ArrowUp") { //b
+            changeBar(true);
+        } else if (keycode == "ArrowDown") { //b
+            changeBar(false);
+        } else if (keycode == "+") { //b
+            moveAll(stepDva);
+        } else if (keycode == "-") { //b
+            moveAll(-stepDva);
         };
         return false;
     });
@@ -129,27 +134,36 @@ $(document).ready(function () {
         document.getElementById("size-text").setAttribute("text", "value", fov.toFixed(1));
     });
 
-    $(window).on('resize', function () {
-        showCameraFov();
-    });
-    showCameraFov();
 });
 
-function showCameraFov() {
-    camera = AFRAME.scenes[0].camera;
-    h = (2 * Math.atan(Math.tan(camera.fov * Math.PI / 180 / 2) * camera.aspect) * 180 / Math.PI).toFixed(1);
-    $("#fov-horizontal b").text(h);
-    $("#fov-vertical b").text(camera.fov.toFixed(1));
-    document.getElementById("size-text-horizontal").setAttribute("text", "value", "FOVh " + h);
-    document.getElementById("size-text-vertical").setAttribute("text", "value", "FOVv " + camera.fov.toFixed(1));
+function changeBar(newBar) {
+    bar = newBar;
+    if (bar) {
+        document.getElementById("selected-bar").object3D.position.y = -0.25;
+        document.getElementById("selected-bar").setAttribute("color", "red");
+    } else {
+        document.getElementById("selected-bar").object3D.position.y = -0.3;
+        document.getElementById("selected-bar").setAttribute("color", "#44CCFF");
+    }
 }
 
-function changeCircle(dir) {
+function moveAll(dir) {
+    dva += dir;
+    $(".bar").each(function (i, e) {
+        e.object3D.position.x = dva;
+    });
+    document.getElementById("dva-text").setAttribute("text", "value", Math.abs(dva) + " dva");
+    document.getElementById("dva-text").object3D.position.x = dva / 51;
+    document.getElementById("displacement-red").setAttribute("text", "value", $("#red")[0].object3D.position.x.toFixed(1));
+    document.getElementById("displacement-blue").setAttribute("text", "value", $("#blue")[0].object3D.position.x.toFixed(1));
+}
 
-    $(".fov-circle").each(function (i, e) {
-        fov += dir;
-        e.setAttribute("geometry", "radiusInner", Math.tan(fov / 2 * Math.PI / 180));
-        e.setAttribute("geometry", "radiusOuter", Math.tan((fov / 2 + 2) * Math.PI / 180));
-        document.getElementById("size-text").setAttribute("text", "value", fov.toFixed(1));
-    })
+function moveBar(dir) {
+    if (bar)
+        e = $("#red")[0];
+    else
+        e = $("#blue")[0];
+    e.object3D.position.x += dir;
+    document.getElementById("displacement-red").setAttribute("text", "value", $("#red")[0].object3D.position.x.toFixed(1));
+    document.getElementById("displacement-blue").setAttribute("text", "value", $("#blue")[0].object3D.position.x.toFixed(1));
 }
